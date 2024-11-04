@@ -5,7 +5,7 @@
  
 
 
-| Labs          | Projects      |
+| Labs          |      |
 | ------------- |:-------------:|
 | [Week01](https://github.com/carlos-g54/Geog_678_Fall2024/tree/main/Labs/Week_01)       | Week01        |
 | [Week02](https://github.com/carlos-g54/Geog_678_Fall2024/tree/main/Labs/Week_02)        | Week02        |
