@@ -1,0 +1,143 @@
+<!doctype html> 
+<html lang="en"> 
+
+
+<head>	
+  <meta charset="utf-8">
+  <title>Carlos' First Web Map</title> <!-- Put the title of your map here -->
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+   integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+   crossorigin=""/>
+     
+   <!-- Make sure you put this AFTER Leaflet's CSS -->
+   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+     integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+     crossorigin=""></script>
+   
+   </head>
+
+ <!-- In the body of the code, you need to create the division on the page for your map and call the map.js file you
+   will make next.-->
+<body>
+	<div id = "map" style = "width:900px; height:580px;"></div> <!--set the size of your map -->
+  <script type="text/javascript" src="nameOfYourMap.js"></script> <!--call the javascript file for your map -->
+
+  <!--The first step is to define your map options and create the map object itself. There are a variety of default
+   mapOptions you can set; here we simply choose the center of the map, its initial zoom, and its max zoom level.
+    Any other Leaflet codes belong inside of the JS script tag-->
+<script>
+    var mapOptions = {
+ center: [30.6060, -96.3375], //set center Lat/Long of your area of interest
+ zoom: 15, //set initial zoom level
+ maxZoom : 24,  //set max zoom level
+ tap : false //fix popup bug on Safari
+ }
+
+//Creates map object according to map options
+  var map = new L.map('map', mapOptions);
+
+//Load the basemap as a tilelayer from Openstreemap.
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+}).addTo(map);
+
+//Geolocation
+map.locate({setView: true, maxZoom: 16});
+
+function onLocationFound(e) {
+    var radius = e.accuracy;
+
+    L.marker(e.latlng).addTo(map)
+        .bindPopup("You are within " + radius + " meters from this point").openPopup();
+
+    L.circle(e.latlng, radius).addTo(map);
+}
+
+map.on('locationfound', onLocationFound);
+
+function onLocationError(e) {
+    alert(e.message);
+}
+
+map.on('locationerror', onLocationError);
+
+//Circle around Kyle Field
+  var circle = L.circle([30.610250, -96.339844], {
+    color: 'maroon',
+    fillColor: '#800000',
+    fillOpacity: 0.5,
+    radius: 250
+}).addTo(map);
+
+//Drop pin markers
+//Let’s create a green leaf icon. The URL is used, but a local file can be used as well.
+var greenIcon = L.icon({
+    iconUrl: './Drop_pin_1.png',
+    //shadowUrl: 'https://leafletjs.com/examples/custom-icons/leaf-shadow.png',
+
+    iconSize:     [38, 38], // size of the icon
+    shadowSize:   [50, 64], // size of the shadow
+    iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+    shadowAnchor: [4, 62],  // the same for the shadow
+    popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+});
+
+//Defining an icon class
+
+var LeafIcon = L.Icon.extend({
+    options: {
+        //shadowUrl: 'https://leafletjs.com/examples/custom-icons/leaf-shadow.png',
+        iconSize:     [38, 95],
+        shadowSize:   [50, 64],
+        iconAnchor:   [22, 94],
+        shadowAnchor: [4, 62],
+        popupAnchor:  [-3, -76]
+    }
+});
+
+
+
+var greenIcon = new LeafIcon({iconUrl: './Drop_pin_1.png'}),
+    redIcon = new LeafIcon({iconUrl: './Green_drop_pin_24px.png'}),
+    orangeIcon = new LeafIcon({iconUrl: './drop_pin_0.png'});
+
+//Adding marker to map.
+
+L.marker([30.615727, -96.340742], {icon: greenIcon}).addTo(map).bindPopup("Academic Building.");
+L.marker([30.61773,-96.33666], {icon: redIcon}).addTo(map).bindPopup("O&M Building");
+L.marker([30.610250, -96.339844], {icon: orangeIcon}).addTo(map).bindPopup("Kyle Field");
+
+
+//Kyle Field pop up. Changing from ".openOn" to ".addTo" will show all three popups. ".openOn" will only display the last variable
+  var popup = L.popup()
+    .setLatLng([30.610250, -96.339844])
+    .setContent("Kyle Field.")
+    .openOn(map);
+
+//Academic building coordinates(30.615727, -96.340742)
+ // var popup = L.popup()
+ //   .setLatLng([30.615727, -96.340742])
+ //   .setContent("Academic Building")
+ //   .addTo(map);
+
+//O&M Building Coordinates(30.61773,-96.33666)
+ // var popup = L.popup()
+ //   .setLatLng([30.61773,-96.33666])
+  //  .setContent("O&M Building")
+  //  .addTo(map);
+
+//On click pop up returns lat long.
+function onMapClick(e) {
+    alert("You clicked the map at " + e.latlng);
+}
+
+map.on('click', onMapClick);
+
+
+</script>
+
+</body>
+</html>

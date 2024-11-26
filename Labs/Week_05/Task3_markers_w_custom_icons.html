@@ -1,0 +1,120 @@
+<!doctype html> <!-- This says your file is in .html -->
+<html lang="en"> <!-- This says your file is in English -->
+
+<!--https://bcds.gitbook.io/learn/tutorials/mapping-and-digital-storytelling/how-to...make-a-starter-map-using-leaflet-part-1-setting-up-your-map-adding-data-and-popups-->
+
+
+<head>	<!-- This opens your header. Your header is where different libraries and plugins are loaded -->
+  <meta charset="utf-8">
+  <title>Task 3 Custom markers</title> <!-- Put the title of your map here -->
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+  <!--Next, you need to tell your HTML to access the Leaflet JavaScript library and its associated CSS stylesheet.
+   You have two options for this, as you can either host the files locally on your computer or call them from 
+   their already-hosted location on the web. -->
+
+   <!--To call them from the web-->
+   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+   integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+   crossorigin=""/>
+     
+   <!--To host the files locally, download and unzip Leaflet, placing the entire Leaflet folder into the folder with 
+   your HTML file. Now, you simply need to change the "href=" and the "src=" links from the above code to the current 
+   location of your file. It should end up looking something like this(code commented out to prevent errors). 
+   You can also close your header at this point. -->
+
+ <!-- To load Leaflet files locally:
+ <link rel="stylesheet" href="./leaflet/leaflet.css"/> (Put the path to the leaflet.css  you downloaded here)
+ <script src="./leaflet/leaflet.js"></script>  (Put the path to the leaflet.js you downloaded here)
+ </head>
+ -->
+
+   <!-- Make sure you put this AFTER Leaflet's CSS -->
+   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+     integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+     crossorigin=""></script>
+   
+   </head>
+
+ <!-- In the body of the code, you need to create the division on the page for your map and call the map.js file you
+   will make next.-->
+<body>
+	<div id = "map" style = "width:900px; height:580px;"></div> <!--set the size of your map -->
+  <script type="text/javascript" src="nameOfYourMap.js"></script> <!--call the javascript file for your map -->
+
+  <!--The first step is to define your map options and create the map object itself. There are a variety of default
+   mapOptions you can set; here we simply choose the center of the map, its initial zoom, and its max zoom level.
+    Any other Leaflet codes belong inside of the JS script tag-->
+<script>
+    var mapOptions = {
+ center: [51.496294, -0.093126], //set center Lat/Long of your area of interest
+ zoom: 15, //set initial zoom level
+ maxZoom : 24,  //set max zoom level
+ tap : false //fix popup bug on Safari
+ }
+
+//Creates map object according to map options
+var map = new L.map('map', mapOptions);
+
+//Example of an externally called basemap_ This loads the tileLayer from Esri:
+//var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+//			attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'});
+
+//Esri_WorldImagery.addTo(map);
+
+
+//Load the basemap as a tilelayer from Openstreemap.
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+}).addTo(map);
+
+//Let’s create a green leaf icon. The URL is used, but a local file can be used as well.
+var greenIcon = L.icon({
+    iconUrl: 'https://leafletjs.com/examples/custom-icons/leaf-green.png',
+    shadowUrl: 'https://leafletjs.com/examples/custom-icons/leaf-shadow.png',
+
+    iconSize:     [38, 95], // size of the icon
+    shadowSize:   [50, 64], // size of the shadow
+    iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+    shadowAnchor: [4, 62],  // the same for the shadow
+    popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+});
+
+//Defining an icon class
+
+var LeafIcon = L.Icon.extend({
+    options: {
+        shadowUrl: 'https://leafletjs.com/examples/custom-icons/leaf-shadow.png',
+        iconSize:     [38, 95],
+        shadowSize:   [50, 64],
+        iconAnchor:   [22, 94],
+        shadowAnchor: [4, 62],
+        popupAnchor:  [-3, -76]
+    }
+});
+
+//Now we can create all three of our leaf icons from this class and use them:
+
+var greenIcon = new LeafIcon({iconUrl: 'https://leafletjs.com/examples/custom-icons/leaf-green.png'}),
+    redIcon = new LeafIcon({iconUrl: 'https://leafletjs.com/examples/custom-icons/leaf-red.png'}),
+    orangeIcon = new LeafIcon({iconUrl: 'https://leafletjs.com/examples/custom-icons/leaf-orange.png'});
+
+//Adding marker to map.
+
+L.marker([51.5, -0.09], {icon: greenIcon}).addTo(map).bindPopup("I am a green leaf.");
+L.marker([51.495, -0.083], {icon: redIcon}).addTo(map).bindPopup("I am a red leaf.");
+L.marker([51.49, -0.1], {icon: orangeIcon}).addTo(map).bindPopup("I am an orange leaf.");
+
+
+//On click pop up returns lat long.
+function onMapClick(e) {
+    alert("You clicked the map at " + e.latlng);
+}
+
+map.on('click', onMapClick);
+
+</script>
+
+</body>
+</html>
