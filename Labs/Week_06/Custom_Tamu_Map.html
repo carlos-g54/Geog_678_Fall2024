@@ -1,0 +1,164 @@
+<!doctype html> 
+<html lang="en"> 
+
+
+<head>	
+  <meta charset="utf-8">
+  <title>Carlos' TAMU Map</title> <!-- Put the title of your map here -->
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+
+
+   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+   integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+   crossorigin=""/>
+     
+   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+     integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+     crossorigin=""></script>
+   
+	<style>
+            html, body {
+                height: 100%;
+                margin: 0;
+            }
+            #map {
+                width: 600px;
+                height: 400px;
+            }
+        </style>      
+        <style>
+        .info {
+            padding: 6px 8px;
+            font: 14px/16px Arial, Helvetica, sans-serif;
+            background: white;
+            background: rgba(255,255,255,0.8);
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border-radius: 5px;
+            }
+        .info h4 {
+            margin: 0 0 5px;
+            color: #777;
+            }
+        .legend {
+            line-height: 18px;
+            color: #555;
+            }
+        .legend i {
+            width: 18px;
+            height: 18px;
+            float: left;
+            margin-right: 8px;
+            opacity: 0.7;
+            }
+        </style>
+   </head>
+
+ <!-- In the body of the code, you need to create the division on the page for your map and call the map.js file you
+   will make next.-->
+<body>
+	<div id = "mapid" style = "width:900px; height:580px;"></div> <!--set the size of your map -->
+  <script type="text/javascript" src="tamubuildings.js"></script> <!--call the javascript file for your map -->
+
+  <!--The first step is to define your map options and create the map object itself. There are a variety of default
+   mapOptions you can set; here we simply choose the center of the map, its initial zoom, and its max zoom level.
+    Any other Leaflet codes belong inside of the JS script tag-->
+<script>
+  //"mapid" has to match the id name given in the "div" tag
+    var map = L.map('mapid').setView([30.610369, -96.344056], 14);
+
+var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+}).addTo(map);
+
+L.geoJson(tamu).addTo(map);
+
+
+//add color to the map
+function getColor(d) {
+    return d = 1 ? '#500000' :
+          
+                      '#FFEDA0';
+}
+
+//changes the outline to a dashed white boundary lines
+function style(feature) {
+    return {
+        fillColor: getColor(feature.properties.density),
+        weight: 2,
+        opacity: 1,
+        color: 'white',
+        dashArray: '0',
+        fillOpacity: 0.7
+    };
+}
+
+geojson = L.geoJson(tamu, {
+	style: style,
+	onEachFeature: onEachFeature
+}).addTo(map);
+
+  //add interaction. 
+  //instructions use the var method. const layer is the correct working version.
+  function highlightFeature(e) {
+		const layer = e.target;
+
+		layer.setStyle({
+			weight: 5,
+			color: '#500000',
+			dashArray: '',
+			fillOpacity: 0.2
+		});
+
+		layer.bringToFront();
+
+		info.update(layer.feature.properties);
+	}
+
+
+
+
+//Defining what happens after "mouseout"
+//When you the mouse is no longer hovering over a feature, it returns it to its previous settigns.
+	function resetHighlight(e) {
+		geojson.resetStyle(e.target);
+		info.update();
+	}
+//zoom to the feature that is selected.
+	function zoomToFeature(e) {
+		map.fitBounds(e.target.getBounds());
+	}
+
+	function onEachFeature(feature, layer) {
+    layer.on({
+        mouseover: highlightFeature,
+        mouseout: resetHighlight,
+        click: zoomToFeature
+    });
+}
+
+
+//works from here up^^^
+var info = L.control();
+	info.onAdd = function (map) {
+    this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+    this.update();
+    return this._div;
+};
+
+// method that we will use to update the control based on feature properties passed
+info.update = function (props) {
+    this._div.innerHTML = '<h4>Building Name and Abbreviation</h4>' +  (props ?
+        '<b>' + props.BldgName + '</b><br />' + props.BldgAbbr + ''
+        : 'Hover over a Building');
+};
+
+
+info.addTo(map);
+
+
+
+</script>
+
+</body>
