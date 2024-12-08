@@ -1,0 +1,133 @@
+<!-- Code from d3-graph-gallery.com -->
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+    <title>Weekly Temperature Forecast in College Station</title>
+</head>
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v4.js"></script>
+
+<!-- Create a div where the graph will take place -->
+<div id="my_dataviz"></div>
+
+<h2>Weekly Temperature Forecast in College Station</h2>
+<script>
+
+// set the dimensions and margins of the graph
+var margin = {top: 10, right: 30, bottom: 20, left: 50},
+    width = 46 - margin.left - margin.right,
+    height = 40 - margin.top - margin.bottom;
+
+// append the svg object to the body of the page
+var svg = d3.select("#my_dataviz")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+          var data = [{
+    weekday: "Sat",
+    Highest: 82,
+    Lowest: 67
+}, {
+    weekday: "Sun",
+    Highest: 81,
+    Lowest: 59
+}, {
+    weekday: "Mon",
+    Highest: 81,
+    Lowest: 50
+}, {
+    weekday: "Tue",
+    Highest: 70,
+    Lowest: 47
+}, {
+    weekday: "Wed",
+    Highest: 77,
+    Lowest: 51
+},{
+    weekday: "Thu",
+    Highest: 78,
+    Lowest: 60
+},{
+    weekday: "Fri",
+    Highest: 79,
+    Lowest: 66
+},{
+    weekday: "Sat ",
+    Highest: 80,
+    Lowest: 66
+}];
+//size of svg graph
+var width = 500,
+    height = 350;
+
+var svg = d3.selectAll("body")
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+    //use scalePoint when the scale is qualitative not quantitative
+var xScale = d3.scalePoint()
+    .domain(data.map(function(d) {
+        return d.weekday
+    }))
+    .range([50, width - 50])
+    .padding(0.5);
+
+    //sets y scale to the max data point in the "highest temp"
+var yScale = d3.scaleLinear()
+    .domain([0, d3.max(data, function(d) {
+        return d.Highest
+    }) * 1.1])
+    .range([height - 50, 10]);
+
+    //creates the "highest temp" line from data selected
+var line1 = d3.line()
+	.x(function(d){ return xScale(d.weekday)})
+	.y(function(d){ return yScale(d.Highest)});
+
+  // add the "lowest temp" line from data selected
+  var line2 = d3.line()
+	.x(function(d){ return xScale(d.weekday)})
+	.y(function(d){ return yScale(d.Lowest)});
+	
+
+  //graphs the line1
+svg.append("path")
+	.attr("d", line1(data))
+	.attr("stroke", "red")
+	.attr("stroke-width", "2")
+	.attr("fill", "none");
+//graphs the line2
+  svg.append("path")
+	.attr("d", line2(data))
+	.attr("stroke", "blue")
+	.attr("stroke-width", "2")
+	.attr("fill", "none");
+
+var xAxis = d3.axisBottom(xScale);
+var yAxis = d3.axisLeft(yScale);
+
+//translate moves x-scale up/down
+svg.append("g").attr("transform", "translate(0,300)")
+    .attr("class", "xAxis")
+    .call(xAxis);
+
+//translate moves y-scale left/right
+svg.append("g")
+    .attr("transform", "translate(50,0)")
+    .attr("class", "yAxis")
+    .call(yAxis);
+
+svg.append("text")
+        .attr("x", (width / 2))             
+        .attr("y", 0 - (margin.top / 2))
+        .attr("text-anchor", "middle")  
+        .style("font-size", "16px") 
+        .style("text-decoration", "underline")  
+        .text("Value vs Date Graph");
+
+</script>
